@@ -38,12 +38,12 @@ class Minesweeper
 
     if @game.isMine?(guess)
       @game.gameLost = true
-      @game.reveal_guess(guess, @board.visibleBoard)
+      @game.showNeighbours(guess, @board.visibleBoard)
       @view.clearView
       @view.showGameBoard(@board.visibleBoard)
       @view.showMineMessage
     else
-      @game.reveal_guess(guess, @board.visibleBoard)
+      @game.showNeighbours(guess, @board.visibleBoard)
     end
   end
 

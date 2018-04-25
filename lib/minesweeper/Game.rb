@@ -30,34 +30,30 @@ class Game
     @gameLost
   end
 
-  # def guess_valid?(input)
-  #   number?(input) && number_in_range?(input)
-  # end
-
   def isGuessXValid?(input)
-    number?(input) && input.to_i.between?(1, @gameBoard.width)
+    isNumber?(input) && input.to_i.between?(1, @gameBoard.width)
   end
 
   def isGuessYValid?(input)
-    number?(input) && input.to_i.between?(1, @gameBoard.height)
+    isNumber?(input) && input.to_i.between?(1, @gameBoard.height)
   end
 
   def isMine?(guess)
-    coordinates = axis_adjusted_coordinates(guess)
+    coordinates = axisAdjustedCoordinates(guess)
 
     @gameBoard.mineBoard[coordinates.y][coordinates.x] == ConfigDefault::MINE
   end
 
-  def reveal_guess(guess, board)
-    coordinates = axis_adjusted_coordinates(guess)
-    number = number_of_surrounding_mines(coordinates)
+  def showNeighbours(guess, board)
+    coordinates = axisAdjustedCoordinates(guess)
+    number = getNumberSurroundingMines(coordinates)
 
     if isMine?(guess)
       board[coordinates.y][coordinates.x] = ConfigDefault::MINE
     elsif number == 0
       board[coordinates.y][coordinates.x] = ConfigDefault::EMPTY_CELL
       @emptyCells.push(coordinates)
-      show_empty_neighbours(coordinates)
+      showEmptyNeighbours(coordinates)
     else
       board[coordinates.y][coordinates.x] = number
     end
@@ -65,19 +61,19 @@ class Game
 
   private
 
-  def axis_adjusted_coordinates(guess)
+  def axisAdjustedCoordinates(guess)
     x_value = guess.x - 1
-    y_value = @gameBoard.height - (guess.y) # because counting from bottom rather than top
+    y_value = @gameBoard.height - (guess.y)
     return CoordinatePair.new(x_value, y_value)
   end
 
-  def number_of_surrounding_mines(guess)
-    cell_coords = get_surrounding_cell_coords(guess)
-    cell_values = get_surrounding_cell_values(cell_coords)
+  def getNumberSurroundingMines(guess)
+    cell_coords = getSurroundingCellCoords(guess)
+    cell_values = getSurroundingCellValues(cell_coords)
     cell_values.count(ConfigDefault::MINE)
   end
 
-  def get_surrounding_cell_values(array_of_cell_coords)
+  def getSurroundingCellValues(array_of_cell_coords)
     cell_values = []
 
     array_of_cell_coords.each do |cell|
@@ -87,7 +83,7 @@ class Game
     return cell_values
   end
 
-  def get_surrounding_cell_coords(coordinates)
+  def getSurroundingCellCoords(coordinates)
     surrounding_cell_coords = []
 
     if coordinates.y >= 1                                                                 # up
@@ -125,35 +121,32 @@ class Game
     return surrounding_cell_coords
   end
 
-  def show_empty_neighbours(cell)
-    neighbour_cells = get_surrounding_cell_coords(cell)
+  def showEmptyNeighbours(cell)
+    neighbour_cells = getSurroundingCellCoords(cell)
 
     neighbour_cells.each do |cell|
       if @emptyCells.include?(cell)
         next
       end
 
-      reveal_neighbours_on_board(cell)
+      revealNeighboursOnBoard(cell)
     end
   end
 
-  def reveal_neighbours_on_board(cell)
-    cell_value = number_of_surrounding_mines(cell)
+  def revealNeighboursOnBoard(cell)
+    cell_value = getNumberSurroundingMines(cell)
 
     if cell_value == 0
       @emptyCells.push(cell)
       @gameBoard.visibleBoard[cell.y][cell.x] = ConfigDefault::EMPTY_CELL
-      show_empty_neighbours(cell)
+      showEmptyNeighbours(cell)
     else
       @gameBoard.visibleBoard[cell.y][cell.x] = cell_value
     end
   end
 
-  def number?(input)
+  def isNumber?(input)
     input.to_i != 0
   end
 
-  def number_in_range?(input)
-    input.to_i.between?(1, ConfigDefault::BOARD_SIZE)
-  end
 end

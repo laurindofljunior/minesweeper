@@ -13,8 +13,8 @@ class GameBoard
     @minesArray = Array.new()
     # puts @height.to_s + " | " + @width.to_s + " | " + @bombs.to_s  + " | " + @totalCells.to_s
     @visibleBoard = createGrid
-    # @mineBoard = generate_grid_with_mines(@visibleBoard)
-    @mineBoard = generate_grid_with_mines(Array.new(@height) { Array.new(@width, ConfigDefault::HIDDEN_CELL) })
+    # @mineBoard = createGridWithMines(@visibleBoard)
+    @mineBoard = createGridWithMines(Array.new(@height) { Array.new(@width, ConfigDefault::HIDDEN_CELL) })
     # @visibleBoard = @mineBoard
   end
 
@@ -22,15 +22,11 @@ class GameBoard
     Array.new(@height) { Array.new(@width, ConfigDefault::HIDDEN_CELL) }
   end
 
-  def generate_grid_with_mines(nested_array)
+  def createGridWithMines(nested_array)
     generateMinesArray
     @count = 0
     mine_array = nested_array.map do |array|
       array.map  do |cell|
-        # puts "count: " + count.to_s
-        # set_cell_status(generateRandomNumber) ? ConfigDefault::MINE : ConfigDefault::HIDDEN_CELL
-        # puts "@minesArray.include? count ? " + (@minesArray.include? count).to_s
-        # @minesArray.include? count ? ConfigDefault::MINE : ConfigDefault::HIDDEN_CELL
         getCellValue
       end
     end
@@ -57,27 +53,10 @@ class GameBoard
       end
       break if @bombsUsed == 0
     end
-
-    # minesArray.include? bombPosition
-    # sharks.include? "Tiger"
   end
 
   def generateRandomNumber
     Random.new.rand(1...(@totalCells))
-  end
-
-  def set_cell_status(randomNumber)
-    # mine_cutoff_point = @totalCells
-    # randomNumber > mine_cutoff_point
-
-
-    # puts "randomNumber: " + randomNumber.to_s
-    if (@bombsUsed > 0)
-      @bombsUsed = @bombsUsed - 1
-      true
-    else
-      false
-    end
   end
 
 end
