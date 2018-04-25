@@ -11,13 +11,13 @@ class ConfigDefault
   # Quantidades padrão do Jogo.
   BOMBS = 10
   # Caracter que representa a mina
-  MINE = 'x'
+  MINE = '💣'
   # Caracter que represta a bandeira
-  MINE_FLAG = '⚑'
+  MINE_FLAG = ' ⚑'
   # Caracter que representa o campo vazio
-  HIDDEN_CELL = '◼'
+  HIDDEN_CELL = '◼◼'
   # HIDDEN_CELL = '⬜'
   # Caracter que representa uma célula vazia
-  EMPTY_CELL = '◦'
+  EMPTY_CELL = '◦◦'
   # EMPTY_CELL = '•'
 end

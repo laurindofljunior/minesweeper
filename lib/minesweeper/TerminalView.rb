@@ -10,40 +10,18 @@ class TerminalView
     puts "This game contains " + @game.gameBoard.bombs.to_s + " bombs."
   end
 
-  def printGamePlayInstructions
-    # puts "Since this is a command-line game, you aren't able to mark mines like in traditional minesweeper."
-    # puts "The axes are arranged like this:"
-    # puts
-    puts board_layout.map { |elem| elem + "\n" }
-    # puts
-  end
-
-  def board_layout
-    [
-      "   ↑",
-      "10 |",
-      " 9 |",
-      " 8 |",
-      " 7 |",
-      " 6 |",
-      " 5 |",
-      " 4 |",
-      " 3 |",
-      " 2 |",
-      " 1 |",
-      "   + ― ― ― ― ― ― ― ― ― ― →",
-      "     1 2 3 4 5 6 7 8 9 10"
-    ]
-  end
-
-  def draw_board(board)
-    puts "Here's the board: "
+  def showGameBoard(board)
     puts
-    puts format_board(board)
+    puts
+    puts " " + "⌜                          ⌝".white.on_blue
+    puts " " + "       CAMP💣 MINAD💣       ".white.on_blue
+    puts " " + "⌞                          ⌟".white.on_blue
+    puts
+    puts showFormatedGameBoard(board)
     puts
   end
 
-  def show_flags_on_winning_board(board)
+  def showWinningBoard(board)
     flag_mines_board = board.map do |array|
       array.map do |cell|
         if cell == ConfigDefault::HIDDEN_CELL
@@ -56,73 +34,116 @@ class TerminalView
     return flag_mines_board
   end
 
-  def format_board(board_as_nested_array)
-    # board_as_nested_array.map do |row|
-    #     row.join(" ") + "\n"
-    # end
+  def showFormatedGameBoard(board_as_nested_array)
     formatedArray = Array.new
+    firstLine = lastLine = ""
     board_as_nested_array.map do |row|
-      line = ""
+      firstLine = "       "
+      row.each_with_index {|val, index|
+        firstLine = firstLine + ".." + " "
+      }
+      firstLine = firstLine + "..\n"
+      lastLine = ""+firstLine
+      formatedArray.push(firstLine)
+      break
+    end
+
+    countLine = 0
+    maxHeight = @game.gameBoard.height.to_i
+
+    board_as_nested_array.map do |row|
+      lineIndex = maxHeight - countLine.to_i
+      line = "  " + ("%02d" % lineIndex) + "   :"
+      countLine = countLine + 1
       row.each_with_index {|val, index|
         line = line + decodeVal(val) + " "
       }
-      line = line + "\n"
+      line = line + ":\n"
       formatedArray.push(line)
     end
+
+
+
+
+    # formatedArray.push(lastLine.gsub! '..', '¨¨')
+
+    lastLine = "        "
+    (1..@game.gameBoard.width).each do |i|
+       lastLine = lastLine + ("%02d" % i) + " "
+    end
+
+    # lastLine = ""+firstLine
+    formatedArray.push(firstLine)
+    formatedArray.push("")
+    formatedArray.push(lastLine)
+
     formatedArray
 
   end
 
   def decodeVal(val)
     if (val.is_a? Integer)
-      (val.to_s).light_blue
+      " " + (val.to_s).light_blue
     else
       if val == ConfigDefault::EMPTY_CELL
         (val.to_s).light_black
       else
-        (val.to_s).light_white
+        if val == ConfigDefault::MINE
+          (val.to_s).light_red
+        else
+          if val == ConfigDefault::MINE_FLAG
+            (val.to_s).light_green
+          else
+            (val.to_s).light_white
+          end
+        end
       end
     end
 
   end
-  #
-  # def prompt_user_guess(coordinate)
-  #   puts "Enter the #{coordinate} coordinate of your guess (1 - #{GameBoard::BOARD_SIZE}): "
-  #   gets.chomp.to_i
-  # end
 
-  def promptXguess
-    puts "Informe a 'X' coordinate of your guess X (1 - " + @game.gameBoard.width.to_s + "): "
+  def promptInput(coordinate, maxValue)
+    puts "Informe um valor para a coordenada '" + coordinate + "' (de 1 à " + maxValue.to_s + "): "
     STDIN.gets.chomp.to_i
   end
 
-  def promptYguess
-    puts "Informe a 'Y' coordinate of your guess Y (1 - " + @game.gameBoard.height.to_s + "): "
-    STDIN.gets.chomp.to_i
+  def promptXInput
+    promptInput("X",@game.gameBoard.width.to_s)
+  end
+
+  def promptYInput
+    promptInput("Y",@game.gameBoard.height.to_s)
   end
 
   def print_wrong_input_message
     puts "Please enter a number in the range 1-#{GameBoard::BOARD_SIZE}"
   end
 
-  def clear_screen
+  def showWrongInputMessage(coordinate, maxValue)
+    puts "Por favor, informe um valor numérico para a coordenada '" + coordinate + "' de 1 à " + maxValue.to_s + "!"
+    STDIN.gets.chomp.to_i
+  end
+
+
+  def clearView
 		system("clear")
 	end
 
-  def print_mine_message
-    puts "             BOOM! Você está morto!             ".light_black.on_white
+  def showMineMessage
+    puts "  " + "             BOOM! Você está morto!             ".light_black.on_white
   end
 
-  def print_game_over_message
-    puts "                        ".light_white.on_red + "                        ".light_black.on_white
-    puts "    💣 GAME OVER 💣     ".light_white.on_red + "           😵           ".light_black.on_white
-    puts "                        ".light_white.on_red + "                        ".light_black.on_white
+  def showGameOverMessage
+    puts "  " + "                        ".light_white.on_red + "                        ".light_black.on_white
+    puts "  " + "    💣 GAME OVER 💣     ".light_white.on_red + "           😵           ".light_red.on_white
+    puts "  " + "                        ".light_white.on_red + "                        ".light_black.on_white
   end
 
-  def print_win_message
-    puts "         Parabéns! Você venceu o jogo!          ".light_white.on_yellow
-    puts "                        ".light_yellow.on_black + "                        ".light_black.on_white
-    puts "  🏆🏆🏆🏆🏆🏆🏆🏆🏆🏆  ".light_yellow.on_black + "           😄           ".light_black.on_white
-    puts "                        ".light_yellow.on_black + "                        ".light_black.on_white
+  def showWinnerMessage
+    puts "  " + "         Parabéns! Você venceu o jogo!          ".light_black.on_yellow
+    puts "  " + "                        ".light_yellow.on_black + "                        ".light_black.on_yellow
+    puts "  " + "         🏆🏆🏆         ".light_yellow.on_black + "           😄           ".light_black.on_yellow
+    puts "  " + "                        ".light_yellow.on_black + "                        ".light_black.on_yellow
+    puts ""
   end
 end

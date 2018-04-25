@@ -30,9 +30,9 @@ class Game
     @gameLost
   end
 
-  def guess_valid?(input)
-    number?(input) && number_in_range?(input)
-  end
+  # def guess_valid?(input)
+  #   number?(input) && number_in_range?(input)
+  # end
 
   def isGuessXValid?(input)
     number?(input) && input.to_i.between?(1, @gameBoard.width)
@@ -42,7 +42,7 @@ class Game
     number?(input) && input.to_i.between?(1, @gameBoard.height)
   end
 
-  def mine?(guess)
+  def isMine?(guess)
     coordinates = axis_adjusted_coordinates(guess)
 
     @gameBoard.mineBoard[coordinates.y][coordinates.x] == ConfigDefault::MINE
@@ -52,7 +52,7 @@ class Game
     coordinates = axis_adjusted_coordinates(guess)
     number = number_of_surrounding_mines(coordinates)
 
-    if mine?(guess)
+    if isMine?(guess)
       board[coordinates.y][coordinates.x] = ConfigDefault::MINE
     elsif number == 0
       board[coordinates.y][coordinates.x] = ConfigDefault::EMPTY_CELL

@@ -11,12 +11,14 @@ class GameBoard
     @bombsUsed=bombs.to_i
     @totalCells = @height * @width
     @minesArray = Array.new()
-    puts @height.to_s + " | " + @width.to_s + " | " + @bombs.to_s  + " | " + @totalCells.to_s
-    @visibleBoard = generate_clean_grid
-    @mineBoard = generate_grid_with_mines(@visibleBoard)
+    # puts @height.to_s + " | " + @width.to_s + " | " + @bombs.to_s  + " | " + @totalCells.to_s
+    @visibleBoard = createGrid
+    # @mineBoard = generate_grid_with_mines(@visibleBoard)
+    @mineBoard = generate_grid_with_mines(Array.new(@height) { Array.new(@width, ConfigDefault::HIDDEN_CELL) })
+    # @visibleBoard = @mineBoard
   end
 
-  def generate_clean_grid
+  def createGrid
     Array.new(@height) { Array.new(@width, ConfigDefault::HIDDEN_CELL) }
   end
 
